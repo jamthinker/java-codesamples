@@ -2,19 +2,43 @@ package datastructures;
 
 import java.util.ArrayList;
 
-class stack<T>{
+class node {
+	node left;
+	node right;
+	int data;
+	public node(int data){
+		this.data = data;
+		left = null;
+		right = null;
+	}
+}
+
+class StackFullException extends RuntimeException {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	public StackFullException(String e){
+		System.err.println(e);
+	}
+	
+}
+
+class Stack<T>{
 	int size;
 	private ArrayList<T> list;
 	private int position;
 	
-	public stack(int size){
+	public Stack(int size){
 		this.size = size;
 		list =  new ArrayList<T>(size);
 		this.position = 0;
 	}
 	void push(T t){
 		if (position > size)
-			throw new StackOverflowError("stack is full");
+			throw new StackFullException("stack is full");
 		list.add(t);
 		position++;
 	}
@@ -27,16 +51,6 @@ class stack<T>{
 	}
 	
 }
-class node {
-	node left;
-	node right;
-	int data;
-	public node(int data){
-		this.data = data;
-		left = null;
-		right = null;
-	}
-}
 
 public class Tree {
 
@@ -45,19 +59,42 @@ public class Tree {
 		this.root = new node(0);
 	}
 	
-	public void insert(int data){
-		node newnode = new node(data);
-		node leftnode = root.left;
-		node righnode = root.right;
+	public void traversal(){
+		Stack<node> stack = new Stack<node>(100);
+		
 		node curr = root;
+		
 		if (root == null)
-			root = newnode;
+		    return;
+		
 		while(curr != null){
-			if (curr.data < newnode.data)
-				curr = curr.right;
-			else
-				curr = curr.left;
+			stack.push(curr);
+			curr = curr.left;
 				
 		}
+		while(stack.size > 0){
+			curr = stack.pop();
+			if (curr.right != null){				
+				curr = curr.right;
+				
+				while(curr != null){
+					stack.push(curr.right);
+					curr = curr.right;
+				}
+			}
+		}
+	}
+
+	public static void main(String... args){
+		
+		Tree tree = new Tree();
+		tree.root.left = new node(1);
+		tree.root.right = new node(2);
+		tree.root.left.left = new node(3);
+		tree.root.right.right = new node(4);
+		tree.traversal();
+		
 	}
 }
+
+
